@@ -40,7 +40,7 @@
         </button>
         <div class="nav-links" id="site-menu">
           <a href="#research">Research</a>
-          <a href="#forecast-lab">Forecast Lab</a>
+          <a href="#forecast-lab">Live Forecast</a>
           <a href="#cv">CV</a>
           <a href="#publications">Publications</a>
           <a href="#about">About</a>
@@ -63,7 +63,7 @@
             <a class="button button-primary" href="NEW_CV_Pouya.pdf" target="_blank" rel="noopener">
               Download CV
             </a>
-            <a class="button button-secondary" href="#forecast-lab">Explore Forecast Lab</a>
+            <a class="button button-secondary" href="#forecast-lab">View Live Forecast</a>
             <a
               class="button button-secondary"
               href="https://scholar.google.com/citations?user=0SS0AlcAAAAJ&hl=en"
@@ -223,92 +223,104 @@
         </div>
       </section>
 
-      <section class="section lab-section" id="forecast-lab" aria-labelledby="lab-title" data-reveal>
+      <section class="section helioguard-section" id="forecast-lab" aria-labelledby="lab-title" data-reveal>
         <div class="section-heading">
-          <p class="eyebrow">Forecast Lab</p>
-          <h2 id="lab-title">A dynamic view of space-weather risk</h2>
+          <p class="eyebrow">Live Forecast</p>
+          <h2 id="lab-title">HelioGuard real-time SEP forecast</h2>
         </div>
-        <div class="lab-grid">
-          <form class="lab-controls" aria-label="Space-weather forecast controls">
-            <div class="scenario-row" aria-label="Preset scenarios">
-              <button class="scenario-button" type="button" data-scenario="quiet">Quiet</button>
-              <button class="scenario-button is-active" type="button" data-scenario="watch">Watch</button>
-              <button class="scenario-button" type="button" data-scenario="storm">Storm</button>
+        <div class="helioguard-dashboard" data-helioguard-dashboard>
+          <div class="helioguard-topline">
+            <div>
+              <p class="source-label">Source</p>
+              <strong>HelioGuard public API</strong>
             </div>
-
-            <label class="range-field" for="solar-activity">
-              <span>
-                <strong>Solar Activity</strong>
-                <output data-lab-value="solar">64</output>
-              </span>
-              <input
-                id="solar-activity"
-                type="range"
-                min="0"
-                max="100"
-                value="64"
-                data-lab-input="solar"
-              />
-            </label>
-
-            <label class="range-field" for="magnetic-disturbance">
-              <span>
-                <strong>Magnetic Disturbance</strong>
-                <output data-lab-value="magnetic">46</output>
-              </span>
-              <input
-                id="magnetic-disturbance"
-                type="range"
-                min="0"
-                max="100"
-                value="46"
-                data-lab-input="magnetic"
-              />
-            </label>
-
-            <label class="range-field" for="data-confidence">
-              <span>
-                <strong>Data Confidence</strong>
-                <output data-lab-value="confidence">78</output>
-              </span>
-              <input
-                id="data-confidence"
-                type="range"
-                min="0"
-                max="100"
-                value="78"
-                data-lab-input="confidence"
-              />
-            </label>
-          </form>
-
-          <aside class="lab-output interactive-card" aria-live="polite">
-            <div class="risk-ring" data-risk-ring style="--risk-fill: 55%">
-              <strong data-risk-score>55</strong>
-              <span>modeled risk</span>
+            <div class="helioguard-actions">
+              <span class="status-pill is-loading" data-hg-connection>Loading live data</span>
+              <button class="button button-ghost" type="button" data-hg-refresh>Refresh Data</button>
+              <a class="button button-secondary" href="https://helioguard.onrender.com/" target="_blank" rel="noopener">
+                Open HelioGuard
+              </a>
             </div>
-            <div class="outlook-copy">
-              <p class="status-pill" data-risk-label>Watch</p>
-              <h3 data-risk-title>Signals deserve closer monitoring.</h3>
-              <p data-risk-copy>
-                Current inputs suggest an elevated but manageable space-weather outlook.
+          </div>
+
+          <div class="live-grid" aria-live="polite">
+            <article class="live-metric">
+              <span class="label">SEP probability</span>
+              <strong data-hg-probability>--</strong>
+              <small data-hg-prediction>Waiting for HelioGuard</small>
+            </article>
+            <article class="live-metric">
+              <span class="label">Trigger flare</span>
+              <strong data-hg-flare>--</strong>
+              <small data-hg-flare-time>--</small>
+            </article>
+            <article class="live-metric">
+              <span class="label">Forecast horizon</span>
+              <strong data-hg-horizon>--</strong>
+              <small data-hg-threshold>--</small>
+            </article>
+            <article class="live-metric">
+              <span class="label">Service</span>
+              <strong data-hg-worker>--</strong>
+              <small data-hg-model-state>--</small>
+            </article>
+          </div>
+
+          <div class="live-details interactive-card">
+            <div class="risk-ring" data-hg-ring style="--risk-fill: 0%">
+              <strong data-hg-ring-value>--</strong>
+              <span>SEP probability</span>
+            </div>
+            <div class="forecast-summary">
+              <p class="status-pill" data-hg-label>Live forecast pending</p>
+              <h3 data-hg-title>Waiting for HelioGuard data.</h3>
+              <p data-hg-summary>
+                This area will show the latest forecast once the HelioGuard API responds.
               </p>
+              <dl class="forecast-facts">
+                <div>
+                  <dt>All clear</dt>
+                  <dd data-hg-all-clear>--</dd>
+                </div>
+                <div>
+                  <dt>Generated</dt>
+                  <dd data-hg-generated>--</dd>
+                </div>
+                <div>
+                  <dt>Training source</dt>
+                  <dd data-hg-training-source>--</dd>
+                </div>
+                <div>
+                  <dt>ROC AUC</dt>
+                  <dd data-hg-roc-auc>--</dd>
+                </div>
+                <div>
+                  <dt>Flux at trigger</dt>
+                  <dd data-hg-flux>--</dd>
+                </div>
+                <div>
+                  <dt>Last service refresh</dt>
+                  <dd data-hg-last-refresh>--</dd>
+                </div>
+              </dl>
             </div>
-            <div class="signal-bars" aria-label="Signal contribution chart">
-              <div class="signal-bar">
-                <span>Solar</span>
-                <i data-lab-bar="solar" style="width: 64%"></i>
+          </div>
+
+          <div class="preview-card">
+            <div class="preview-header">
+              <div>
+                <span class="label">Embedded preview</span>
+                <strong>helioguard.onrender.com</strong>
               </div>
-              <div class="signal-bar">
-                <span>Magnetic</span>
-                <i data-lab-bar="magnetic" style="width: 46%"></i>
-              </div>
-              <div class="signal-bar">
-                <span>Confidence</span>
-                <i data-lab-bar="confidence" style="width: 78%"></i>
-              </div>
+              <a href="https://helioguard.onrender.com/" target="_blank" rel="noopener">Open full dashboard</a>
             </div>
-          </aside>
+            <iframe
+              title="HelioGuard real-time SEP forecast dashboard"
+              src="https://helioguard.onrender.com/"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
         </div>
       </section>
 

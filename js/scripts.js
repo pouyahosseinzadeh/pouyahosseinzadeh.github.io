@@ -1,3 +1,5 @@
+const HELIOGUARD_BASE_URL = "https://helioguard.onrender.com";
+
 const header = document.querySelector("[data-header]");
 const navToggle = document.querySelector(".nav-toggle");
 const navLinks = document.querySelector(".nav-links");
@@ -10,57 +12,30 @@ const focusPanels = document.querySelectorAll("[data-focus-panel]");
 const interactiveCards = document.querySelectorAll(".interactive-card");
 const copyButton = document.querySelector("[data-copy-profile]");
 const copyStatus = document.querySelector("[data-copy-status]");
-const labInputs = document.querySelectorAll("[data-lab-input]");
-const labValues = document.querySelectorAll("[data-lab-value]");
-const labBars = document.querySelectorAll("[data-lab-bar]");
-const scenarioButtons = document.querySelectorAll("[data-scenario]");
-const riskRing = document.querySelector("[data-risk-ring]");
-const riskScore = document.querySelector("[data-risk-score]");
-const riskLabel = document.querySelector("[data-risk-label]");
-const riskTitle = document.querySelector("[data-risk-title]");
-const riskCopy = document.querySelector("[data-risk-copy]");
+const refreshButton = document.querySelector("[data-hg-refresh]");
 
-const scenarios = {
-  quiet: {
-    solar: 20,
-    magnetic: 18,
-    confidence: 88,
-  },
-  watch: {
-    solar: 64,
-    magnetic: 46,
-    confidence: 78,
-  },
-  storm: {
-    solar: 88,
-    magnetic: 82,
-    confidence: 61,
-  },
+const helioguardFields = {
+  connection: document.querySelector("[data-hg-connection]"),
+  probability: document.querySelector("[data-hg-probability]"),
+  prediction: document.querySelector("[data-hg-prediction]"),
+  flare: document.querySelector("[data-hg-flare]"),
+  flareTime: document.querySelector("[data-hg-flare-time]"),
+  horizon: document.querySelector("[data-hg-horizon]"),
+  threshold: document.querySelector("[data-hg-threshold]"),
+  worker: document.querySelector("[data-hg-worker]"),
+  modelState: document.querySelector("[data-hg-model-state]"),
+  ring: document.querySelector("[data-hg-ring]"),
+  ringValue: document.querySelector("[data-hg-ring-value]"),
+  label: document.querySelector("[data-hg-label]"),
+  title: document.querySelector("[data-hg-title]"),
+  summary: document.querySelector("[data-hg-summary]"),
+  allClear: document.querySelector("[data-hg-all-clear]"),
+  generated: document.querySelector("[data-hg-generated]"),
+  trainingSource: document.querySelector("[data-hg-training-source]"),
+  rocAuc: document.querySelector("[data-hg-roc-auc]"),
+  flux: document.querySelector("[data-hg-flux]"),
+  lastRefresh: document.querySelector("[data-hg-last-refresh]"),
 };
-
-const outlooks = [
-  {
-    max: 34,
-    label: "Quiet",
-    title: "Conditions look stable.",
-    copy: "The modeled outlook favors normal monitoring with no strong disruption signal.",
-    color: "#0f766e",
-  },
-  {
-    max: 64,
-    label: "Watch",
-    title: "Signals deserve closer monitoring.",
-    copy: "Current inputs suggest an elevated but manageable space-weather outlook.",
-    color: "#b65f25",
-  },
-  {
-    max: 100,
-    label: "Storm",
-    title: "Risk is high enough to plan around.",
-    copy: "The combined signals point to a stronger disruption scenario for exposed technical systems.",
-    color: "#b42318",
-  },
-];
 
 const setHeaderState = () => {
   header?.classList.toggle("is-scrolled", window.scrollY > 12);
@@ -80,6 +55,189 @@ const closeMenu = () => {
   navLinks?.classList.remove("is-open");
   navToggle?.setAttribute("aria-expanded", "false");
   document.body.classList.remove("menu-open");
+};
+
+const setText = (element, value) => {
+  if (element) {
+    element.textContent = value;
+  }
+};
+
+const formatPercent = (value) => {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return "--";
+  }
+
+  return `${Math.round(value * 100)}%`;
+};
+
+const formatNumber = (value, digits = 3) => {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return "--";
+  }
+
+  return value.toFixed(digits);
+};
+
+const formatTime = (value) => {
+  if (!value) {
+    return "--";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return date.toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+const formatLabel = (value) => {
+  if (!value) {
+    return "--";
+  }
+
+  return String(value).replace(/[-_]/g, " ");
+};
+
+const forecastColor = (forecast) => {
+  const label = forecast?.prediction_label || "";
+
+  if (forecast?.all_clear === true || label.includes("unlikely")) {
+    return "#0f766e";
+  }
+
+  if (label.includes("likely")) {
+    return "#b42318";
+  }
+
+  return "#b65f25";
+};
+
+const setConnectionState = (state, text) => {
+  const connection = helioguardFields.connection;
+
+  if (!connection) {
+    return;
+  }
+
+  connection.textContent = text;
+  connection.classList.toggle("is-loading", state === "loading");
+  connection.classList.toggle("is-error", state === "error");
+};
+
+const summarizeForecast = (forecast) => {
+  const label = formatLabel(forecast.prediction_label);
+  const flare = forecast.trigger_flare_class || "--";
+  const probability = formatPercent(forecast.probability_sep_event_in_horizon);
+
+  if (!forecast.prediction_label) {
+    return {
+      title: "HelioGuard has not published a current forecast.",
+      summary: "The live API responded, but no latest forecast was included.",
+    };
+  }
+
+  return {
+    title: `HelioGuard prediction: ${label}.`,
+    summary: `Latest trigger: ${flare}. SEP probability in the forecast horizon: ${probability}.`,
+  };
+};
+
+const renderHelioguard = (forecast, status) => {
+  if (!forecast) {
+    setConnectionState("error", "No forecast available");
+    return;
+  }
+
+  const color = forecastColor(forecast);
+  const probability = typeof forecast.probability_sep_event_in_horizon === "number"
+    ? forecast.probability_sep_event_in_horizon
+    : 0;
+  const percent = formatPercent(forecast.probability_sep_event_in_horizon);
+  const worker = status?.worker || {};
+  const model = status?.model || {};
+  const forecastSummary = summarizeForecast(forecast);
+
+  setConnectionState("ready", "Live data loaded");
+  setText(helioguardFields.probability, percent);
+  setText(helioguardFields.prediction, formatLabel(forecast.prediction_label));
+  setText(helioguardFields.flare, forecast.trigger_flare_class || "--");
+  setText(helioguardFields.flareTime, formatTime(forecast.trigger_flare_time_utc));
+  setText(helioguardFields.horizon, `${forecast.forecast_horizon_hours ?? "--"} h`);
+  setText(helioguardFields.threshold, `${forecast.event_threshold_pfu ?? "--"} pfu threshold`);
+  setText(
+    helioguardFields.worker,
+    worker.refresh_in_progress ? "refreshing" : worker.alive ? "online" : "--"
+  );
+  setText(helioguardFields.modelState, model.status ? `model ${model.status}` : "--");
+  setText(helioguardFields.ringValue, percent);
+  setText(helioguardFields.label, formatLabel(forecast.prediction_label));
+  setText(helioguardFields.title, forecastSummary.title);
+  setText(helioguardFields.summary, forecastSummary.summary);
+  setText(helioguardFields.allClear, forecast.all_clear === true ? "yes" : "no");
+  setText(helioguardFields.generated, formatTime(forecast.generated_utc));
+  setText(helioguardFields.trainingSource, forecast.training_source || model.training_source || "--");
+  setText(helioguardFields.rocAuc, formatNumber(forecast.training?.metrics?.roc_auc, 3));
+  setText(helioguardFields.flux, `${formatNumber(forecast.proton_flux_at_trigger_pfu, 3)} pfu`);
+  setText(helioguardFields.lastRefresh, formatTime(worker.last_refresh_finished_utc));
+
+  if (helioguardFields.ring) {
+    helioguardFields.ring.style.setProperty("--risk-fill", `${Math.round(probability * 100)}%`);
+    helioguardFields.ring.style.setProperty("--risk-color", color);
+  }
+
+  if (helioguardFields.label) {
+    helioguardFields.label.style.setProperty("--risk-color", color);
+  }
+};
+
+const fetchJson = async (path) => {
+  const response = await fetch(`${HELIOGUARD_BASE_URL}${path}`, { cache: "no-store" });
+
+  if (!response.ok) {
+    throw new Error(`HelioGuard returned ${response.status}`);
+  }
+
+  return response.json();
+};
+
+const loadHelioguard = async () => {
+  if (!helioguardFields.connection) {
+    return;
+  }
+
+  setConnectionState("loading", "Loading live data");
+  refreshButton?.setAttribute("disabled", "true");
+
+  try {
+    const [statusResult, forecastResult] = await Promise.allSettled([
+      fetchJson("/api/v1/status"),
+      fetchJson("/api/v1/forecast/latest"),
+    ]);
+    const status = statusResult.status === "fulfilled" ? statusResult.value : null;
+    const forecast = forecastResult.status === "fulfilled"
+      ? forecastResult.value
+      : status?.latest_forecast;
+
+    renderHelioguard(forecast, status);
+  } catch {
+    setConnectionState("error", "Live data unavailable");
+    setText(helioguardFields.title, "HelioGuard data could not be loaded.");
+    setText(
+      helioguardFields.summary,
+      "The embedded dashboard link is still available while the API is unreachable."
+    );
+  } finally {
+    refreshButton?.removeAttribute("disabled");
+  }
 };
 
 navToggle?.addEventListener("click", () => {
@@ -135,91 +293,6 @@ focusTabs.forEach((tab) => {
   });
 });
 
-const labInputMap = Array.from(labInputs).reduce((map, input) => {
-  map[input.dataset.labInput] = input;
-  return map;
-}, {});
-
-const findOutlook = (risk) => outlooks.find((outlook) => risk <= outlook.max) || outlooks[outlooks.length - 1];
-
-const setScenarioState = (activeScenario) => {
-  scenarioButtons.forEach((button) => {
-    button.classList.toggle("is-active", button.dataset.scenario === activeScenario);
-  });
-};
-
-const updateLab = (activeScenario = "") => {
-  if (!labInputs.length) {
-    return;
-  }
-
-  const solar = Number(labInputMap.solar?.value || 0);
-  const magnetic = Number(labInputMap.magnetic?.value || 0);
-  const confidence = Number(labInputMap.confidence?.value || 0);
-  const uncertainty = 100 - confidence;
-  const risk = Math.round(solar * 0.42 + magnetic * 0.43 + uncertainty * 0.15);
-  const outlook = findOutlook(risk);
-
-  labValues.forEach((output) => {
-    const key = output.dataset.labValue;
-    output.value = labInputMap[key]?.value || "0";
-    output.textContent = output.value;
-  });
-
-  labBars.forEach((bar) => {
-    const key = bar.dataset.labBar;
-    const value = Number(labInputMap[key]?.value || 0);
-    bar.style.width = `${value}%`;
-    bar.style.background = key === "confidence" ? "#0f766e" : outlook.color;
-  });
-
-  if (riskRing) {
-    riskRing.style.setProperty("--risk-fill", `${risk}%`);
-    riskRing.style.setProperty("--risk-color", outlook.color);
-  }
-
-  if (riskScore) {
-    riskScore.textContent = String(risk);
-  }
-
-  if (riskLabel) {
-    riskLabel.textContent = outlook.label;
-    riskLabel.style.setProperty("--risk-color", outlook.color);
-  }
-
-  if (riskTitle) {
-    riskTitle.textContent = outlook.title;
-  }
-
-  if (riskCopy) {
-    riskCopy.textContent = outlook.copy;
-  }
-
-  setScenarioState(activeScenario);
-};
-
-labInputs.forEach((input) => {
-  input.addEventListener("input", () => updateLab());
-});
-
-scenarioButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const scenario = scenarios[button.dataset.scenario];
-
-    if (!scenario) {
-      return;
-    }
-
-    Object.entries(scenario).forEach(([key, value]) => {
-      if (labInputMap[key]) {
-        labInputMap[key].value = String(value);
-      }
-    });
-
-    updateLab(button.dataset.scenario);
-  });
-});
-
 interactiveCards.forEach((card) => {
   card.addEventListener("pointermove", (event) => {
     const rect = card.getBoundingClientRect();
@@ -248,6 +321,8 @@ copyButton?.addEventListener("click", async () => {
     }
   }, 2600);
 });
+
+refreshButton?.addEventListener("click", loadHelioguard);
 
 if ("IntersectionObserver" in window) {
   const navObserver = new IntersectionObserver(
@@ -291,7 +366,8 @@ if ("IntersectionObserver" in window) {
 
 setHeaderState();
 setScrollProgress();
-updateLab("watch");
+loadHelioguard();
+window.setInterval(loadHelioguard, 60000);
 window.addEventListener(
   "scroll",
   () => {
