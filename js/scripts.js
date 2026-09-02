@@ -10,6 +10,57 @@ const focusPanels = document.querySelectorAll("[data-focus-panel]");
 const interactiveCards = document.querySelectorAll(".interactive-card");
 const copyButton = document.querySelector("[data-copy-profile]");
 const copyStatus = document.querySelector("[data-copy-status]");
+const labInputs = document.querySelectorAll("[data-lab-input]");
+const labValues = document.querySelectorAll("[data-lab-value]");
+const labBars = document.querySelectorAll("[data-lab-bar]");
+const scenarioButtons = document.querySelectorAll("[data-scenario]");
+const riskRing = document.querySelector("[data-risk-ring]");
+const riskScore = document.querySelector("[data-risk-score]");
+const riskLabel = document.querySelector("[data-risk-label]");
+const riskTitle = document.querySelector("[data-risk-title]");
+const riskCopy = document.querySelector("[data-risk-copy]");
+
+const scenarios = {
+  quiet: {
+    solar: 20,
+    magnetic: 18,
+    confidence: 88,
+  },
+  watch: {
+    solar: 64,
+    magnetic: 46,
+    confidence: 78,
+  },
+  storm: {
+    solar: 88,
+    magnetic: 82,
+    confidence: 61,
+  },
+};
+
+const outlooks = [
+  {
+    max: 34,
+    label: "Quiet",
+    title: "Conditions look stable.",
+    copy: "The modeled outlook favors normal monitoring with no strong disruption signal.",
+    color: "#0f766e",
+  },
+  {
+    max: 64,
+    label: "Watch",
+    title: "Signals deserve closer monitoring.",
+    copy: "Current inputs suggest an elevated but manageable space-weather outlook.",
+    color: "#b65f25",
+  },
+  {
+    max: 100,
+    label: "Storm",
+    title: "Risk is high enough to plan around.",
+    copy: "The combined signals point to a stronger disruption scenario for exposed technical systems.",
+    color: "#b42318",
+  },
+];
 
 const setHeaderState = () => {
   header?.classList.toggle("is-scrolled", window.scrollY > 12);
@@ -84,6 +135,91 @@ focusTabs.forEach((tab) => {
   });
 });
 
+const labInputMap = Array.from(labInputs).reduce((map, input) => {
+  map[input.dataset.labInput] = input;
+  return map;
+}, {});
+
+const findOutlook = (risk) => outlooks.find((outlook) => risk <= outlook.max) || outlooks[outlooks.length - 1];
+
+const setScenarioState = (activeScenario) => {
+  scenarioButtons.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.scenario === activeScenario);
+  });
+};
+
+const updateLab = (activeScenario = "") => {
+  if (!labInputs.length) {
+    return;
+  }
+
+  const solar = Number(labInputMap.solar?.value || 0);
+  const magnetic = Number(labInputMap.magnetic?.value || 0);
+  const confidence = Number(labInputMap.confidence?.value || 0);
+  const uncertainty = 100 - confidence;
+  const risk = Math.round(solar * 0.42 + magnetic * 0.43 + uncertainty * 0.15);
+  const outlook = findOutlook(risk);
+
+  labValues.forEach((output) => {
+    const key = output.dataset.labValue;
+    output.value = labInputMap[key]?.value || "0";
+    output.textContent = output.value;
+  });
+
+  labBars.forEach((bar) => {
+    const key = bar.dataset.labBar;
+    const value = Number(labInputMap[key]?.value || 0);
+    bar.style.width = `${value}%`;
+    bar.style.background = key === "confidence" ? "#0f766e" : outlook.color;
+  });
+
+  if (riskRing) {
+    riskRing.style.setProperty("--risk-fill", `${risk}%`);
+    riskRing.style.setProperty("--risk-color", outlook.color);
+  }
+
+  if (riskScore) {
+    riskScore.textContent = String(risk);
+  }
+
+  if (riskLabel) {
+    riskLabel.textContent = outlook.label;
+    riskLabel.style.setProperty("--risk-color", outlook.color);
+  }
+
+  if (riskTitle) {
+    riskTitle.textContent = outlook.title;
+  }
+
+  if (riskCopy) {
+    riskCopy.textContent = outlook.copy;
+  }
+
+  setScenarioState(activeScenario);
+};
+
+labInputs.forEach((input) => {
+  input.addEventListener("input", () => updateLab());
+});
+
+scenarioButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const scenario = scenarios[button.dataset.scenario];
+
+    if (!scenario) {
+      return;
+    }
+
+    Object.entries(scenario).forEach(([key, value]) => {
+      if (labInputMap[key]) {
+        labInputMap[key].value = String(value);
+      }
+    });
+
+    updateLab(button.dataset.scenario);
+  });
+});
+
 interactiveCards.forEach((card) => {
   card.addEventListener("pointermove", (event) => {
     const rect = card.getBoundingClientRect();
@@ -155,6 +291,7 @@ if ("IntersectionObserver" in window) {
 
 setHeaderState();
 setScrollProgress();
+updateLab("watch");
 window.addEventListener(
   "scroll",
   () => {
