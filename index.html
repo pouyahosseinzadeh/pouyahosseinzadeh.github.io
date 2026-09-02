@@ -5,23 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Pouya Hosseinzadeh is a Computer Science Ph.D. candidate at Utah State University researching predictive models for space weather events."
+      content="Pouya Hosseinzadeh is a Computer Science Ph.D. student at Utah State University researching predictive models for space weather events."
     />
     <meta name="author" content="Pouya Hosseinzadeh" />
     <meta property="og:title" content="Pouya Hosseinzadeh" />
     <meta
       property="og:description"
-      content="Computer Science Ph.D. candidate at Utah State University focused on predictive modeling for space weather."
+      content="Computer Science Ph.D. student at Utah State University focused on predictive modeling for space weather."
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://pouyahosseinzadeh.github.io/" />
     <meta property="og:image" content="https://pouyahosseinzadeh.github.io/images/Me_Pro.jpg" />
-    <title>Pouya Hosseinzadeh | Computer Science Ph.D. Candidate</title>
+    <title>Pouya Hosseinzadeh | Computer Science Ph.D. Student</title>
+    <script>
+      document.documentElement.classList.add("js-enabled");
+    </script>
     <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body id="top">
     <a class="skip-link" href="#main">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true">
+      <span data-scroll-progress></span>
+    </div>
 
     <header class="site-header" data-header>
       <nav class="nav" aria-label="Primary navigation">
@@ -43,9 +49,9 @@
     </header>
 
     <main id="main">
-      <section class="hero section-panel" aria-labelledby="hero-title">
+      <section class="hero section-panel" aria-labelledby="hero-title" data-reveal>
         <div class="hero-copy">
-          <p class="eyebrow">Computer Science Ph.D. Candidate</p>
+          <p class="eyebrow">Computer Science Ph.D. Student</p>
           <h1 id="hero-title">Pouya Hosseinzadeh</h1>
           <p class="hero-summary">
             I study predictive models for space weather events, with an emphasis on practical
@@ -65,6 +71,11 @@
               Google Scholar
             </a>
           </div>
+          <div class="tag-row" aria-label="Research themes">
+            <span>Machine learning</span>
+            <span>Space weather</span>
+            <span>Scientific data</span>
+          </div>
           <dl class="profile-facts" aria-label="Profile details">
             <div>
               <dt>Affiliation</dt>
@@ -80,18 +91,37 @@
             </div>
           </dl>
         </div>
-        <figure class="portrait">
-          <img src="images/Me_Pro.jpg" alt="Portrait of Pouya Hosseinzadeh" />
-        </figure>
+        <div class="hero-visual">
+          <figure class="portrait">
+            <img src="images/Me_Pro.jpg" alt="Portrait of Pouya Hosseinzadeh" />
+          </figure>
+          <aside class="signal-card interactive-card" aria-label="Research snapshot">
+            <div>
+              <p class="card-label">Current Focus</p>
+              <strong>Space-weather forecasting</strong>
+            </div>
+            <div class="signal-meter" aria-hidden="true">
+              <span></span>
+            </div>
+            <p>
+              Turning scientific observations into predictive tools that help people anticipate
+              risk in technical systems.
+            </p>
+            <button class="button button-ghost" type="button" data-copy-profile>
+              Copy Profile Link
+            </button>
+            <span class="copy-status" aria-live="polite" data-copy-status></span>
+          </aside>
+        </div>
       </section>
 
-      <section class="section" id="research" aria-labelledby="research-title">
+      <section class="section" id="research" aria-labelledby="research-title" data-reveal>
         <div class="section-heading">
           <p class="eyebrow">Research Focus</p>
           <h2 id="research-title">Predictive modeling for space weather resilience</h2>
         </div>
         <div class="feature-grid">
-          <article class="feature-card">
+          <article class="feature-card interactive-card">
             <p class="feature-kicker">Modeling</p>
             <h3>Forecasting complex events</h3>
             <p>
@@ -99,7 +129,7 @@
               downstream impact on technical systems.
             </p>
           </article>
-          <article class="feature-card">
+          <article class="feature-card interactive-card">
             <p class="feature-kicker">Application</p>
             <h3>Protecting critical infrastructure</h3>
             <p>
@@ -107,7 +137,7 @@
               space exploration.
             </p>
           </article>
-          <article class="feature-card">
+          <article class="feature-card interactive-card">
             <p class="feature-kicker">Collaboration</p>
             <h3>Academic and applied work</h3>
             <p>
@@ -116,14 +146,98 @@
             </p>
           </article>
         </div>
+
+        <div class="focus-switcher" aria-label="Interactive research focus">
+          <div class="focus-tabs" role="tablist" aria-label="Research focus details">
+            <button
+              class="focus-tab is-active"
+              id="tab-data"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              aria-controls="panel-data"
+              data-focus-tab="data"
+            >
+              Data
+            </button>
+            <button
+              class="focus-tab"
+              id="tab-models"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="panel-models"
+              data-focus-tab="models"
+            >
+              Models
+            </button>
+            <button
+              class="focus-tab"
+              id="tab-impact"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="panel-impact"
+              data-focus-tab="impact"
+            >
+              Impact
+            </button>
+          </div>
+          <div class="focus-panels">
+            <article
+              class="focus-panel is-active"
+              id="panel-data"
+              role="tabpanel"
+              aria-labelledby="tab-data"
+              data-focus-panel="data"
+            >
+              <p class="feature-kicker">Signal to insight</p>
+              <h3>Working with scientific observations</h3>
+              <p>
+                The research starts with noisy, time-sensitive scientific data and turns it into
+                clearer signals that models can learn from.
+              </p>
+            </article>
+            <article
+              class="focus-panel"
+              id="panel-models"
+              role="tabpanel"
+              aria-labelledby="tab-models"
+              hidden
+              data-focus-panel="models"
+            >
+              <p class="feature-kicker">Prediction</p>
+              <h3>Designing useful forecasting systems</h3>
+              <p>
+                The goal is not only higher accuracy, but models that can be evaluated, trusted,
+                and connected to decisions under uncertainty.
+              </p>
+            </article>
+            <article
+              class="focus-panel"
+              id="panel-impact"
+              role="tabpanel"
+              aria-labelledby="tab-impact"
+              hidden
+              data-focus-panel="impact"
+            >
+              <p class="feature-kicker">Resilience</p>
+              <h3>Supporting systems people depend on</h3>
+              <p>
+                Better forecasts can help teams plan for disruptions affecting satellites,
+                communications, navigation, and other critical services.
+              </p>
+            </article>
+          </div>
+        </div>
       </section>
 
-      <section class="section split-section" id="cv" aria-labelledby="cv-title">
+      <section class="section split-section" id="cv" aria-labelledby="cv-title" data-reveal>
         <div class="section-heading">
           <p class="eyebrow">Curriculum Vitae</p>
           <h2 id="cv-title">Current CV and professional background</h2>
         </div>
-        <div class="callout">
+        <div class="callout interactive-card">
           <p>
             For education, research experience, publications, and technical background, view the
             current CV.
@@ -134,14 +248,14 @@
         </div>
       </section>
 
-      <section class="section" id="publications" aria-labelledby="publications-title">
+      <section class="section" id="publications" aria-labelledby="publications-title" data-reveal>
         <div class="section-heading">
           <p class="eyebrow">Publications</p>
           <h2 id="publications-title">Research profiles and publication records</h2>
         </div>
         <div class="link-list">
           <a
-            class="resource-link"
+            class="resource-link interactive-card"
             href="https://scholar.google.com/citations?user=0SS0AlcAAAAJ&hl=en"
             target="_blank"
             rel="noopener"
@@ -153,7 +267,7 @@
             <span aria-hidden="true">-></span>
           </a>
           <a
-            class="resource-link"
+            class="resource-link interactive-card"
             href="https://www.researchgate.net/profile/Pouya-Hosseinzadeh-2"
             target="_blank"
             rel="noopener"
@@ -167,14 +281,14 @@
         </div>
       </section>
 
-      <section class="section split-section" id="about" aria-labelledby="about-title">
+      <section class="section split-section" id="about" aria-labelledby="about-title" data-reveal>
         <div class="section-heading">
           <p class="eyebrow">About</p>
           <h2 id="about-title">Computer science research with real-world stakes</h2>
         </div>
         <div class="body-copy">
           <p>
-            I am a Ph.D. candidate in Computer Science at Utah State University. My work focuses on
+            I am a Ph.D. student in Computer Science at Utah State University. My work focuses on
             predictive models for space weather events and their role in protecting modern technical
             infrastructure.
           </p>
@@ -182,25 +296,48 @@
             I am especially interested in the intersection of machine learning, scientific data, and
             applied systems where forecasts can support better decisions.
           </p>
+          <div class="accordion" aria-label="Additional background">
+            <details>
+              <summary>Methods and tools</summary>
+              <p>
+                Machine learning, scientific computing, predictive modeling, and applied data
+                analysis.
+              </p>
+            </details>
+            <details>
+              <summary>Research domains</summary>
+              <p>
+                Space weather, technical infrastructure, communications, defense, and space
+                exploration.
+              </p>
+            </details>
+            <details>
+              <summary>Collaboration style</summary>
+              <p>
+                I value clear modeling assumptions, careful evaluation, and research communication
+                that makes technical findings usable.
+              </p>
+            </details>
+          </div>
         </div>
       </section>
 
-      <section class="section contact-section" id="contact" aria-labelledby="contact-title">
+      <section class="section contact-section" id="contact" aria-labelledby="contact-title" data-reveal>
         <div class="section-heading">
           <p class="eyebrow">Contact</p>
           <h2 id="contact-title">Connect with me</h2>
         </div>
         <div class="contact-grid">
-          <a class="contact-link" href="https://www.usu.edu/" target="_blank" rel="noopener">
+          <a class="contact-link interactive-card" href="https://www.usu.edu/" target="_blank" rel="noopener">
             <span>University</span>
             <strong>Utah State University</strong>
           </a>
-          <a class="contact-link" href="https://cs.usu.edu/" target="_blank" rel="noopener">
+          <a class="contact-link interactive-card" href="https://cs.usu.edu/" target="_blank" rel="noopener">
             <span>Department</span>
             <strong>Computer Science</strong>
           </a>
           <a
-            class="contact-link"
+            class="contact-link interactive-card"
             href="http://linkedin.com/in/pouya-hosseinzadeh-6521b9b5"
             target="_blank"
             rel="noopener"
@@ -208,7 +345,12 @@
             <span>Professional Network</span>
             <strong>LinkedIn</strong>
           </a>
-          <a class="contact-link" href="https://github.com/pouyahosseinzadeh" target="_blank" rel="noopener">
+          <a
+            class="contact-link interactive-card"
+            href="https://github.com/pouyahosseinzadeh"
+            target="_blank"
+            rel="noopener"
+          >
             <span>Code and Projects</span>
             <strong>GitHub</strong>
           </a>
