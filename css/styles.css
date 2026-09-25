@@ -345,24 +345,12 @@ h3 {
   padding: 0 0.9rem;
 }
 
-.profile-tools {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 2.4rem;
-}
-
-.profile-tools .button-ghost {
-  width: auto;
-}
-
 .profile-facts {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0;
   max-width: 720px;
-  margin: 0;
+  margin: 1.7rem 0 0;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.82);
@@ -422,15 +410,6 @@ h3 {
   margin: 0 auto;
   object-fit: contain;
   border-radius: 6px;
-}
-
-.copy-status {
-  display: block;
-  min-height: 1.2rem;
-  margin-top: 0.55rem;
-  color: var(--teal-dark);
-  font-size: 0.85rem;
-  font-weight: 720;
 }
 
 .helioguard-dashboard {

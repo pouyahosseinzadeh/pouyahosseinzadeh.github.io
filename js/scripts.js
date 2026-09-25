@@ -10,8 +10,6 @@ const revealItems = document.querySelectorAll("[data-reveal]");
 const focusTabs = document.querySelectorAll("[data-focus-tab]");
 const focusPanels = document.querySelectorAll("[data-focus-panel]");
 const interactiveCards = document.querySelectorAll(".interactive-card");
-const copyButton = document.querySelector("[data-copy-profile]");
-const copyStatus = document.querySelector("[data-copy-status]");
 const refreshButton = document.querySelector("[data-hg-refresh]");
 
 const helioguardFields = {
@@ -299,27 +297,6 @@ interactiveCards.forEach((card) => {
     card.style.setProperty("--x", `${event.clientX - rect.left}px`);
     card.style.setProperty("--y", `${event.clientY - rect.top}px`);
   });
-});
-
-copyButton?.addEventListener("click", async () => {
-  const profileUrl = "https://pouyahosseinzadeh.github.io/";
-
-  try {
-    await navigator.clipboard.writeText(profileUrl);
-    if (copyStatus) {
-      copyStatus.textContent = "Profile link copied.";
-    }
-  } catch {
-    if (copyStatus) {
-      copyStatus.textContent = profileUrl;
-    }
-  }
-
-  window.setTimeout(() => {
-    if (copyStatus) {
-      copyStatus.textContent = "";
-    }
-  }, 2600);
 });
 
 refreshButton?.addEventListener("click", loadHelioguard);
